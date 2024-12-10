@@ -1,0 +1,333 @@
+Node
+    Instale a última versão do Node JS com o gerenciador de versões do Node - NVM
+    https://nodejs.org/en/download/package-manager/#nvm
+Yarn
+    Gerenciador de pacotes para instalações como o apt do Linux
+    https://classic.yarnpkg.com/pt-BR/docs/install/#debian-stable
+    Inicie o Yarn para criar o arquivo package.json
+        yarn init
+    Instale as dependências
+    yarn add <dependencia>
+Babel
+    Converter o código para que o navegador entenda
+    Para trabalhar com linha de comando
+        yarn add @babel/cli
+    Instale PRESET
+        yarn add @babel/preset-env
+    Instale CORE
+        yarn add @babel/core
+    Em package.json, configure como serão executados os scripts abaixo de dependencies:
+        ...
+        "dependencies": {
+            "@babel/cli": "^7.8.4",
+            "@babel/core": "^7.9.0",
+            "@babel/preset-env": "^7.9.5"
+        },
+        "scripts": {
+            "dev": "babel ./main.js -0 ./bundle.js -w"
+        }
+        }
+        O -w serve para atualizar automaticamente o bundle.js de acordo com o código do projeto
+    Execute o script dev para que o Babel transforme o código ES6 para o navegador como class em function
+        yarn dev
+    Crie o arquivo .babelrc na raiz do projeto para configurar o Babel com o conteúdo:
+        {
+            "presets": ["@babel/preset-env"]
+        }
+REST / SPREAD
+    Necessário instalar o pacote para funcionar com Babel
+    yarn add @babel/plugin-proposal-object-rest-spread
+    Dentro do arquivo .babelrc é necessário colocar os plugins abaixo dos presets
+        {
+            "presets": ["@babel/preset-env"],
+            "plugins": ["@babel/plugin-proposal-object-rest-spread"]
+        }
+
+STATIC
+    Quando usado dentro de uma classe ele não enxergará o restante da classe (o que estiver fora desse método).
+    Fará uma operação e retornará o valor independente de qualquer outro método ou var/const/this.
+    Nesse caso nem precisa de constructor como no exemplo abaixo:
+    class Matematica {
+        static soma(a, b) {
+            return a + b;
+        }
+        console.log(Matematica.soma(1, 2));
+    }
+
+CONST
+    const não pode ter seu valor alterado como em var.
+    const a = 1;
+    Se tentar alterar a:
+    a = 3;
+    Irá gerar um erro informando que seu valor não pode ser alterado porque é uma constante.
+    Mas o valor em const pode ser MUTÁVEL como:
+    const usuario = { nome: 'Amauri' };
+    usuario.nome = 'Rossetti';
+    console.log(usuario);
+
+LET
+    let só é enxergado dentro do escopo, ou seja, entre os parênteses da função
+    function teste(x) {
+        let y = 2;
+        if(x > 5) {
+            console.log(y);
+        }
+    }
+
+    teste(10);
+
+    Se tentar enxergar o y aqui, fora do escopo, dará erro:
+    console.log(y);
+
+
+const arr = [1, 3, 4, 5, 8, 9];
+
+// MAP
+// percorre arr obtendo o item e a posição (index)
+const newArr = arr.map(function(item, index) {
+    return item + index;
+});
+
+console.log(newArr);
+
+
+// REDUCE
+// soma os itens e retorna o total
+// na primeira vez o total será 0 e next será 1
+// na segunda vez o total será 1 e next será 3
+const sum = arr.reduce(function(total, next) {
+    return total + next;
+});
+
+console.log(sum);
+
+
+// FILTER
+
+const arr = [1, 3, 4, 5, 8, 9];
+
+// filtrará somente os números pares
+const filter = arr.filter(function(item) {
+    return item % 2 === 0;
+})
+
+console.log(filter);
+
+
+
+// FIND
+// procura uma informação no array
+// no exemplo verifica se existe o 3 e retorna 3 porque o return será true
+// se fosse return item === 2; retornaria undefined
+const find = arr.find(function(item) {
+    return item === 3;
+})
+
+console.log(find);
+
+
+
+// ARROW FUNCTIONS E VALORES PADRÃO PARA OS PARÂMETROS
+// Arquivo arrowFunctions.js
+
+// DESESTRUTURAÇÃO
+// Arquivo desestruturacao.js
+
+// REST
+// Arquivo rest.js
+
+
+=================================================================================================
+
+Webpack
+    Serviço que disponibiliza trabalhar com vários arquivos JS na aplicação, como de imagens, json, etc.
+    Converterá em um único arquivo bundle.js com todas as informações.
+    Configure as dependencies no arquivo package.json para devDependencies:
+        ...
+        "license": "MIT",
+        "devDependencies": {
+            "@babel/cli": "^7.8.4",
+        ...
+    Instale as dependências como desenvolvimento
+        yarn add webpack webpack-cli -D
+    Crie o arquivo webpack.config.js na raiz do projeto:
+        module.exports = {
+            // arquivo principal
+            entry: './main.js',
+            // para onde será enviado o código convertido para antes do ES6 como bundle.js
+            output: {
+                path: __dirname,
+                filename: 'bundle.js',
+            },
+            module: {
+                // como deve se comportar quando usuário importar arquivos JS
+                // qual loader utilizará (no nosso caso, Babel que manipula o conteúdo do arquivo)
+                // toda vez que importar um novo arquivo JS, executará o babel sozinho naquele arquivo.
+                // dessa forma não precisaremos do Babel executando em segundo plano
+                rules: [
+                    {
+                        // regex entre // e \ para escapar o . e $ final da regex
+                        test: /\.js$/,
+                        // para o Babel não execute arquivos JS da pasta node_modules
+                        exclude: /node_modules/,
+                        // qual loader será usado
+                        use: {
+                            loader: 'babel-loader',
+                        }
+                    }
+                ]
+            }
+        }
+    Instale o BABEL loader
+        yarn add babel-loader -D
+    Altere os scripts em package. json:
+        "scripts": {
+            "dev": "webpack --mode=development -w"
+        }
+
+=================================================================================================
+
+IMPORT / EXPORT
+Quando importar funções dentro de um arquivo o import deverá ser entre {}
+    export function soma(a, b) {
+        return a + b;
+    }
+
+    export function sub(a, b) {
+        return a - b;
+    }
+
+Quando tiver apenas uma função em um arquivo não deverá ser entre {} e a função deverá conter default
+    export default function multiplica(a, b) {
+        return a * b;
+    }
+
+O import para as funções acima será assim:
+    import { soma, sub } from './funcoes';
+    Caso queira renomear a soma (que não tem default na função) deverá ser assim:
+    Caso soma tenha um export default, podemos importar assim:
+    import soma, { sub } from './funcoes';
+    import { soma as somaFunction, sub } from './funcoes';
+    import multiplica from './multiplica';
+    O nome multiplica não precisa ser igual ao da função no arquivo importado
+    Podemos importar também todas as funções do arquivo com *
+    import * as funcoes from './funcoes';
+    console.log(funcoes.soma(1, 2));
+
+=================================================================================================
+
+WEBPACK DEV SERVER
+    Atualiza o navegador sem precisar dar refresh na página, apenas salvando o arquivo
+    Crie duas pastas na raiz do projeto:
+        Arquivos que não precisam ser monitorados pelo webpack
+            public
+        Arquivos monitorados pelo webpack
+            src
+    Coloque o index.html dentro de public e delete bundle.js pois será criado um novo
+    Crie um arquivo main.js dentro de src
+    Precisamos alterar o arquivo webpack.config.js:
+        entry: './src/main.js',
+        path: __dirname + '/public',
+        
+        Com as alterações o novo arquivo ficará assim:
+            module.exports = {
+                // arquivo principal
+                entry: './src/main.js',
+                // para onde será enviado o código convertido para antes do ES6 como bundle.js
+                output: {
+                    path: __dirname + '/public',
+                    filename: 'bundle.js',
+                },
+                module: {
+                    // como deve se comportar quando usuário importar arquivos JS
+                    // qual loader utilizará (no nosso caso, Babel que manipula o conteúdo do arquivo)
+                    // toda vez que importar um novo arquivo JS, executará o babel sozinho naquele arquivo.
+                    // dessa forma não precisaremos do Babel executando em segundo plano
+                    rules: [
+                        {
+                            // regex entre // e \ para escapar o . e $ final da regex
+                            test: /\.js$/,
+                            // para o Babel não execute arquivos JS da pasta node_modules
+                            exclude: /node_modules/,
+                            // qual loader será usado
+                            use: {
+                                loader: 'babel-loader',
+                            }
+                        }
+                    ]
+                }
+            }
+
+    Instale a dependência:
+        yarn add webpack-dev-server -D
+        Precisamos alterar o arquivo webpack.config.js entre filename e module:
+            devServer: {
+                contentBase: __dirname + '/public'
+            },
+        
+        Com as alterações o novo arquivo ficará assim:
+        
+        module.exports = {
+            // arquivo principal
+            entry: './src/main.js',
+            // para onde será enviado o código convertido para antes do ES6 como bundle.js
+            output: {
+                path: __dirname + '/public',
+                filename: 'bundle.js',
+            },
+            devServer: {
+                contentBase: __dirname + '/public'
+            },
+            module: {
+                // como deve se comportar quando usuário importar arquivos JS
+                // qual loader utilizará (no nosso caso, Babel que manipula o conteúdo do arquivo)
+                // toda vez que importar um novo arquivo JS, executará o babel sozinho naquele arquivo.
+                // dessa forma não precisaremos do Babel executando em segundo plano
+                rules: [
+                    {
+                        // regex entre // e \ para escapar o . e $ final da regex
+                        test: /\.js$/,
+                        // para o Babel não execute arquivos JS da pasta node_modules
+                        exclude: /node_modules/,
+                        // qual loader será usado
+                        use: {
+                            loader: 'babel-loader',
+                        }
+                    }
+                ]
+            }
+        }
+
+    Altere o script em package.json:
+        "scripts": {
+            "dev": "webpack-dev-server --mode=development"
+        }
+
+    ARQUIVO BUNDLE.JS
+    Apesar de não termos o arquivo bundle.js mais, o webpack embute ele em suas configurações.
+
+    Execute o script:
+        yarn dev
+            Será informado que o projeto está sendo executado em localhost:8080
+                Project is running at http://localhost:8080/
+
+    COLOCANDO EM PRODUÇÃO
+        Para colocarmos em produção devemos criar um script "build" em package.json:
+            "scripts": {
+                "dev": "webpack-dev-server --mode=development",
+                "build": "webpack --mode=production"
+            }
+
+
+ASYNC / AWAIT
+    Instale as dependências para async/await:
+        yarn add @babel/plugin-transform-async-to-generator -D
+        yarn add @babel/polyfill -D
+
+AXIOS
+    Para requisições a APIs
+    Instale:
+        yarn add axios
+
+
+=================================================================================================
